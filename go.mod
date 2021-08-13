@@ -1,3 +1,3 @@
-module go-ngrok
+module github.com/hx/go-ngrok
 
 go 1.16
