@@ -42,7 +42,9 @@ func (p *Process) Start() (err error) {
 // StopContext interrupts the process. If ctx expires before the process completes, the process will be killed. On
 // operating systems that do not support the interrupt signal (such as Windows), the process will be killed immediately.
 func (p *Process) StopContext(ctx context.Context) (err error) {
-	atomic.StoreInt64(&p.stopping, 1)
+	if !atomic.CompareAndSwapInt64(&p.stopping, 0, 1) {
+		return
+	}
 	if err = p.cmd.Process.Signal(os.Interrupt); err != nil {
 		err = p.cmd.Process.Kill()
 	} else {
