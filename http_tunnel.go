@@ -3,7 +3,6 @@ package ngrok
 import (
 	"context"
 	"errors"
-	"net/url"
 	"time"
 )
 
@@ -12,8 +11,8 @@ const HTTPTunnelURLsTimeout = time.Second * 10
 // HTTPTunnel represents a process running a pair of HTTP/HTTPS tunnels.
 type HTTPTunnel struct {
 	*Tunnel
-	InsecureURL *url.URL
-	SecureURL   *url.URL
+	InsecureURL *URL
+	SecureURL   *URL
 }
 
 // NewHTTPTunnel creates a new HTTP tunnel from the given request.
@@ -44,9 +43,9 @@ func (t *HTTPTunnel) waitForURLs() (err error) {
 		if message.Object == "tunnels" && message.URL != nil {
 			switch message.URL.Scheme {
 			case "http":
-				t.InsecureURL = message.URL.Raw()
+				t.InsecureURL = message.URL
 			case "https":
-				t.SecureURL = message.URL.Raw()
+				t.SecureURL = message.URL
 			}
 		}
 		return t.InsecureURL != nil && t.SecureURL != nil
