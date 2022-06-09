@@ -16,8 +16,12 @@ type HTTPTunnel struct {
 }
 
 // NewHTTPTunnel creates a new HTTP tunnel from the given request.
-func (e Executable) NewHTTPTunnel(request *HTTPTunnelRequest) *HTTPTunnel {
-	return &HTTPTunnel{Tunnel: e.NewTunnel(request)}
+func (e Executable) NewHTTPTunnel(request *HTTPTunnelRequest) (*HTTPTunnel, error) {
+	tunnel, err := e.NewTunnel(request)
+	if err != nil {
+		return nil, err
+	}
+	return &HTTPTunnel{Tunnel: tunnel}, nil
 }
 
 // Start opens the tunnel, and returns when it is open and both SecureURL and InsecureURL are set. If

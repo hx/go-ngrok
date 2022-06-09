@@ -12,9 +12,9 @@ func IsAvailable() bool { return DefaultExecutable.IsAvailable() }
 func NewProcess(args ...string) *Process { return DefaultExecutable.NewProcess(args...) }
 
 // NewTunnel creates a new generic tunnel from the given request.
-func NewTunnel(request TunnelRequest) *Tunnel { return DefaultExecutable.NewTunnel(request) }
+func NewTunnel(request TunnelRequest) (*Tunnel, error) { return DefaultExecutable.NewTunnel(request) }
 
 // NewHTTPTunnel creates a new HTTP tunnel from the given request.
-func NewHTTPTunnel(request *HTTPTunnelRequest) *HTTPTunnel {
+func NewHTTPTunnel(request *HTTPTunnelRequest) (*HTTPTunnel, error) {
 	return DefaultExecutable.NewHTTPTunnel(request)
 }

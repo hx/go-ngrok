@@ -10,7 +10,7 @@ type HTTPTunnelRequest struct {
 	HTTPS     bool
 }
 
-func (r *HTTPTunnelRequest) Args() (args []string) {
+func (r *HTTPTunnelRequest) Args(version *Version) (args []string) {
 	args = []string{"http"}
 
 	if r.Subdomain != "" {
@@ -37,5 +37,11 @@ func (r *HTTPTunnelRequest) Args() (args []string) {
 		host = "https://" + host
 	}
 
-	return append(args, host)
+	args = append(args, host)
+
+	if version.Major >= 3 {
+		args = append(args, "--scheme", "http,https")
+	}
+
+	return args
 }

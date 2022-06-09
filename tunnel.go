@@ -15,11 +15,15 @@ type Tunnel struct {
 	webServiceDone chan struct{}
 }
 
-func (e Executable) NewTunnel(request TunnelRequest) *Tunnel {
-	return &Tunnel{
-		Process:        e.NewProcess(request.Args()...),
-		webServiceDone: make(chan struct{}),
+func (e Executable) NewTunnel(request TunnelRequest) (*Tunnel, error) {
+	version, err := e.Version()
+	if err != nil {
+		return nil, err
 	}
+	return &Tunnel{
+		Process:        e.NewProcess(request.Args(version)...),
+		webServiceDone: make(chan struct{}),
+	}, nil
 }
 
 func (t *Tunnel) Start() error {

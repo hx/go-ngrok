@@ -4,7 +4,6 @@ import (
 	"errors"
 	"os"
 	"os/exec"
-	"regexp"
 	"strings"
 )
 
@@ -32,24 +31,23 @@ func (e Executable) NewProcess(args ...string) *Process {
 	return &Process{cmd: e.command(append(args, "--log", "stdout", "--log-format", "json")...)}
 }
 
-var versionPattern = regexp.MustCompile(`\d+(\.\d+)+`)
-
 // Version returns the numeric part of the executable's --version output.
-func (e Executable) Version() (string, error) {
+func (e Executable) Version() (*Version, error) {
 	if stat, err := os.Stat(e.Path()); err != nil || stat.IsDir() {
-		return "", ErrBadExecutable
+		return nil, ErrBadExecutable
 	}
-	var (
-		result, err = e.command("--version").CombinedOutput()
-		str         = strings.TrimSpace(string(result))
-	)
-	if match := versionPattern.FindString(str); match != "" {
-		str = match
-	} else {
-		err = errors.New(str)
-		str = ""
+
+	result, err := e.command("--version").CombinedOutput()
+	if err != nil {
+		return nil, err
 	}
-	return str, err
+
+	str := strings.TrimSpace(string(result))
+	if v := ParseVersion(str); v != nil {
+		return v, nil
+	}
+
+	return nil, errors.New(str)
 }
 
 func (e Executable) command(args ...string) *exec.Cmd {
